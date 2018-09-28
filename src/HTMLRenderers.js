@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, View, WebView, Dimensions } from 'react-native';
+import { TouchableOpacity, Text, View, WebView, Dimensions, TouchableHighlight, Linking } from 'react-native';
 import { _constructStyles, _getElementClassStyles } from './HTMLStyles';
 import HTMLImage from './HTMLImage';
 
@@ -44,7 +44,27 @@ export function img (htmlAttribs, children, convertedCSSStyles, passProps = {}) 
         styleSet: 'IMAGE'
     });
     const { src, alt, width, height } = htmlAttribs;
-    return (
+
+    if (passProps.nameNavScreen) {
+      return (
+        <TouchableHighlight
+          //onPress={() => Linking.openURL(src)}
+          onPress={() => passProps.navComponent.navigate(passProps.nameNavScreen,{
+            urlImage: src
+          })}
+           >
+            <HTMLImage
+              source={{ uri: src }}
+              alt={alt}
+              width={width}
+              height={height}
+              style={style}
+              {...passProps}
+            />
+        </TouchableHighlight>
+      );
+    } else {
+      return (
         <HTMLImage
           source={{ uri: src }}
           alt={alt}
@@ -53,7 +73,8 @@ export function img (htmlAttribs, children, convertedCSSStyles, passProps = {}) 
           style={style}
           {...passProps}
         />
-    );
+      );
+    }
 }
 
 export function ul (htmlAttribs, children, convertedCSSStyles, passProps = {}) {

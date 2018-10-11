@@ -5,10 +5,15 @@ import PropTypes from 'prop-types';
 export default class HTMLImage extends PureComponent {
     constructor (props) {
         super(props);
+        this.isCancelled = false;
         this.state = {
             width: props.imagesInitialDimensions.width,
             height: props.imagesInitialDimensions.height
         };
+    }
+
+    componentWillUnmount() {
+        this.isCancelled = true;
     }
 
     static propTypes = {
@@ -75,7 +80,7 @@ export default class HTMLImage extends PureComponent {
         const { styleWidth, styleHeight } = this.getDimensionsFromStyle(style, height, width);
 
         if (styleWidth && styleHeight) {
-            return this.setState({
+            return !this.isCancelled && this.setState({
                 width: typeof styleWidth === 'string' && styleWidth.search('%') !== -1 ? styleWidth : parseInt(styleWidth, 10),
                 height: typeof styleHeight === 'string' && styleHeight.search('%') !== -1 ? styleHeight : parseInt(styleHeight, 10)
             });
@@ -85,14 +90,14 @@ export default class HTMLImage extends PureComponent {
             source.uri,
             (originalWidth, originalHeight) => {
                 if (!imagesMaxWidth) {
-                    return this.setState({ width: originalWidth, height: originalHeight });
+                    return !this.isCancelled && this.setState({ width: originalWidth, height: originalHeight });
                 }
                 const optimalWidth = imagesMaxWidth <= originalWidth ? imagesMaxWidth : originalWidth;
                 const optimalHeight = (optimalWidth * originalHeight) / originalWidth;
-                this.setState({ width: optimalWidth, height: optimalHeight, error: false });
+                !this.isCancelled && this.setState({ width: optimalWidth, height: optimalHeight, error: false });
             },
             () => {
-                this.setState({ error: true });
+                !this.isCancelled && this.setState({ error: true });
             }
         );
     }

@@ -45,10 +45,14 @@ export function img (htmlAttribs, children, convertedCSSStyles, passProps = {}) 
     });
     const { src, alt, width, height } = htmlAttribs;
 
+
     if (passProps.nameNavScreen) {
+      var RandomNumber = Math.floor(Math.random() * 1000) + 1 + Math.floor(Math.random() * 1000);
+
       return (
         <TouchableHighlight
           //onPress={() => Linking.openURL(src)}
+          key={RandomNumber}
           onPress={() => passProps.navComponent.navigate(passProps.nameNavScreen,{
             urlImage: src
           })}
